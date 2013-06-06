@@ -21,7 +21,7 @@ var list = require("continuable-list")
 var of = require("continuable/of")
 
 var client = Redis.createClient()
-var run = require("../index")
+var run = require("continuable-generators")
 
 run(function*() {
     yield client.hmset.bind(client, "blog::post", {
