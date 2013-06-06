@@ -6,6 +6,7 @@ var error = require("continuable/error")
 var list = require("continuable-list")
 
 var run = require("../index")
+var recover = require("../recover")
 var packageJsonUri = path.join(__dirname, "..", "package.json")
 
 test("run is a function", function (assert) {
@@ -60,6 +61,49 @@ test("error propagation", function (assert) {
     })(function (err, value) {
         assert.equal(err.message, "foo")
         assert.equal(value, undefined)
+
+        assert.end()
+    })
+})
+
+test("run with no return", function (assert) {
+    var v
+    function sideeffect(arg) {
+        return function (cb) {
+            v = arg
+            cb(null)
+        }
+    }
+
+    var cache = {}
+    function store(key, value) {
+        cache[key] = value
+    }
+
+    run(function* () {
+        yield sideeffect(42)
+
+        store("foo", v)
+    })(function (err) {
+        assert.ifError(err)
+        assert.equal(cache.foo, 42)
+
+        assert.end()
+    })
+})
+
+test("can recover", function (assert) {
+    run(function* () {
+        var v = yield recover(function* () {
+            return error(new Error("foo"))
+        }, function (err) {
+            return of(42)
+        })
+
+        return of(v * 2)
+    })(function (err, value) {
+        assert.ifError(err)
+        assert.equal(value, 84)
 
         assert.end()
     })
