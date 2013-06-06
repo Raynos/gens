@@ -1,4 +1,7 @@
 language: node_js
 node_js:
   - 0.11.2
+before_script:
+ - nvm install v0.11.2
+ - nvm use v0.11.2
 script: node --harmony ./test/index.js
