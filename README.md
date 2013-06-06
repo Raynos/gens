@@ -2,9 +2,7 @@
 
 <!-- [![browser support][5]][6] -->
 
-<!-- [![build status][1]][2] [![NPM version][7]][8] [![dependency status][3]][4] -->
-
-[![NPM version](https://badge.fury.io/js/after.png)](http://badge.fury.io/js/after)
+[![build status][1]][2] [![NPM version][7]][8] [![dependency status][3]][4]
 
 Experimental usage of generators for continuables
 
