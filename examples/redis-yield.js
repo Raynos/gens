@@ -1,5 +1,7 @@
 var Redis = require("redis")
 var console = require("console")
+var list = require("continuable-list")
+var of = require("continuable/of")
 
 var client = Redis.createClient()
 var run = require("../index")
@@ -17,11 +19,13 @@ run(function*() {
         return client.hgetall.bind(client, "post::tag::" + tag)
     }))
 
-    yield { post: post, taggedPosts: taggedPosts }
+    return of({ post: post, taggedPosts: taggedPosts })
 })(function (err, result) {
     if (err) {
         throw err
     }
 
     console.log("post", result.post, "taggedPosts", result.taggedPosts)
+
+    client.quit()
 })

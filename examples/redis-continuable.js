@@ -32,4 +32,6 @@ hash({ post: post, taggedPosts: taggedPosts })(function (err, result) {
     }
 
     console.log("post", result.post, "taggedPosts", result.taggedPosts)
+
+    client.quit()
 })
