@@ -1,8 +1,8 @@
-var maybeCallback = require("continuable")
+var maybeCallback = require("continuable/maybe-callback")
 
-module.exports = run
+module.exports = async
 
-function run(generator) {
+function async(generator) {
     return maybeCallback(function async() {
         var args = [].slice.call(arguments)
 
@@ -16,11 +16,7 @@ function run(generator) {
                 }
 
                 var res = iterator.send(value)
-                if (res.done) {
-                    return res.value ? res.value(callback) : callback(null)
-                }
-
-                res.value(next)
+                return res.done ? callback(null, res.value) : res.value(next)
             }
         }
     })

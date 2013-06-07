@@ -12,29 +12,28 @@ Experimental usage of generators for continuables
 ## Example
 
 ```js
-// run this with --harmony on node v0.11.2
-var Redis = require("redis")
-var console = require("console")
-var list = require("continuable-list")
-var of = require("continuable/of")
+// run this with --use-strict --harmony on node v0.11.2
+let Redis = require("redis")
+let console = require("console")
+let list = require("continuable-list")
 
-var client = Redis.createClient()
-var run = require("continuable-generators")
+let client = Redis.createClient()
+let async = require("../index")
 
-run(function*() {
+async(function* () {
     yield client.hmset.bind(client, "blog::post", {
         date: "20130605",
         title: "g3n3rat0rs r0ck",
         tags: "js,node"
     })
 
-    var post = yield client.hgetall.bind(client, "blog::post")
-    var tags = post.tags.split(",")
-    var taggedPosts = yield list(tags.map(function (tag) {
+    let post = yield client.hgetall.bind(client, "blog::post")
+    let tags = post.tags.split(",")
+    let taggedPosts = yield list(tags.map(function (tag) {
         return client.hgetall.bind(client, "post::tag::" + tag)
     }))
 
-    return of({ post: post, taggedPosts: taggedPosts })
+    return { post: post, taggedPosts: taggedPosts }
 })(function (err, result) {
     if (err) {
         throw err
@@ -44,6 +43,7 @@ run(function*() {
 
     client.quit()
 })
+
 ```
 
 ## Installation

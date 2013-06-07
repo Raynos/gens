@@ -1,9 +1,8 @@
 var either = require("continuable/either")
-
-var run = require("./index")
+var async = require("./index")
 
 module.exports = recover
 
 function recover(gen, left) {
-    return either(run(gen), left)
+    return either(async(gen), left)
 }

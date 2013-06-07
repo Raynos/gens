@@ -1,25 +1,24 @@
-var Redis = require("redis")
-var console = require("console")
-var list = require("continuable-list")
-var of = require("continuable/of")
+let Redis = require("redis")
+let console = require("console")
+let list = require("continuable-list")
 
-var client = Redis.createClient()
-var run = require("../index")
+let client = Redis.createClient()
+let async = require("../index")
 
-run(function*() {
+async(function* () {
     yield client.hmset.bind(client, "blog::post", {
         date: "20130605",
         title: "g3n3rat0rs r0ck",
         tags: "js,node"
     })
 
-    var post = yield client.hgetall.bind(client, "blog::post")
-    var tags = post.tags.split(",")
-    var taggedPosts = yield list(tags.map(function (tag) {
+    let post = yield client.hgetall.bind(client, "blog::post")
+    let tags = post.tags.split(",")
+    let taggedPosts = yield list(tags.map(function (tag) {
         return client.hgetall.bind(client, "post::tag::" + tag)
     }))
 
-    return of({ post: post, taggedPosts: taggedPosts })
+    return { post: post, taggedPosts: taggedPosts }
 })(function (err, result) {
     if (err) {
         throw err

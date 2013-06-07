@@ -16,7 +16,7 @@ test("run is a function", function (assert) {
 
 test("simple generator", function (assert) {
     run(function* () {
-        return of(5)
+        return 5
     })(function (err, value) {
         assert.ifError(err)
         assert.equal(value, 5)
@@ -28,7 +28,7 @@ test("simple generator", function (assert) {
 test("parse json files", function (assert) {
     run(function* () {
         var file = yield fs.readFile.bind(null, packageJsonUri)
-        return of(JSON.parse(file))
+        return JSON.parse(file)
     })(function (err, value) {
         assert.ifError(err)
         assert.equal(value.name, "continuable-generators")
@@ -39,7 +39,7 @@ test("parse json files", function (assert) {
 
 test("parallel yields", function (assert) {
     run(function* () {
-        return list([
+        return yield list([
             fs.stat.bind(null, packageJsonUri),
             fs.readFile.bind(null, packageJsonUri)
         ])
@@ -57,7 +57,7 @@ test("error propagation", function (assert) {
     run(function* () {
         var fail = yield error(new Error("foo"))
 
-        return of(42)
+        return 42
     })(function (err, value) {
         assert.equal(err.message, "foo")
         assert.equal(value, undefined)
@@ -95,12 +95,12 @@ test("run with no return", function (assert) {
 test("can recover", function (assert) {
     run(function* () {
         var v = yield recover(function* () {
-            return error(new Error("foo"))
+            return yield error(new Error("foo"))
         }, function (err) {
             return of(42)
         })
 
-        return of(v * 2)
+        return v * 2
     })(function (err, value) {
         assert.ifError(err)
         assert.equal(value, 84)
