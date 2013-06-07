@@ -96,8 +96,8 @@ test("can recover", function (assert) {
     run(function* () {
         var v = yield recover(function* () {
             return yield error(new Error("foo"))
-        }, function (err) {
-            return of(42)
+        }, function* (err) {
+            return 42
         })
 
         return v * 2
