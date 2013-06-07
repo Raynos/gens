@@ -1,21 +1,22 @@
 var test = require("tape")
 var fs = require("fs")
 var path = require("path")
-var of = require("continuable/of")
 var error = require("continuable/error")
+var of = require("continuable/of")
 var list = require("continuable-list")
 
-var run = require("../index")
+var async = require("../index")
 var recover = require("../recover")
+var both = require("../both")
 var packageJsonUri = path.join(__dirname, "..", "package.json")
 
-test("run is a function", function (assert) {
-    assert.equal(typeof run, "function")
+test("async is a function", function (assert) {
+    assert.equal(typeof async, "function")
     assert.end()
 })
 
 test("simple generator", function (assert) {
-    run(function* () {
+    async(function* () {
         return 5
     })(function (err, value) {
         assert.ifError(err)
@@ -26,7 +27,7 @@ test("simple generator", function (assert) {
 })
 
 test("parse json files", function (assert) {
-    run(function* () {
+    async(function* () {
         var file = yield fs.readFile.bind(null, packageJsonUri)
         return JSON.parse(file)
     })(function (err, value) {
@@ -38,7 +39,7 @@ test("parse json files", function (assert) {
 })
 
 test("parallel yields", function (assert) {
-    run(function* () {
+    async(function* () {
         return yield list([
             fs.stat.bind(null, packageJsonUri),
             fs.readFile.bind(null, packageJsonUri)
@@ -54,7 +55,7 @@ test("parallel yields", function (assert) {
 })
 
 test("error propagation", function (assert) {
-    run(function* () {
+    async(function* () {
         var fail = yield error(new Error("foo"))
 
         return 42
@@ -66,7 +67,7 @@ test("error propagation", function (assert) {
     })
 })
 
-test("run with no return", function (assert) {
+test("async with no return", function (assert) {
     var v
     function sideeffect(arg) {
         return function (cb) {
@@ -80,7 +81,7 @@ test("run with no return", function (assert) {
         cache[key] = value
     }
 
-    run(function* () {
+    async(function* () {
         yield sideeffect(42)
 
         store("foo", v)
@@ -93,7 +94,7 @@ test("run with no return", function (assert) {
 })
 
 test("can recover", function (assert) {
-    run(function* () {
+    async(function* () {
         var v = yield recover(function* () {
             return yield error(new Error("foo"))
         }, function* (err) {
@@ -104,6 +105,23 @@ test("can recover", function (assert) {
     })(function (err, value) {
         assert.ifError(err)
         assert.equal(value, 84)
+
+        assert.end()
+    })
+})
+
+test("can inspect both error and value", function (assert) {
+    async(function* () {
+        var data = yield both(error(new Error("foo")))
+        var data2 = yield both(of(12))
+
+        return { data: data, data2: data2 }
+    })(function (err, value) {
+        assert.ifError(err)
+        assert.deepEqual(value, {
+            data: [new Error("foo"), undefined],
+            data2: [null, 12]
+        })
 
         assert.end()
     })
