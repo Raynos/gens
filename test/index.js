@@ -10,6 +10,12 @@ var recover = require("../recover")
 var both = require("../both")
 var packageJsonUri = path.join(__dirname, "..", "package.json")
 
+function sleep(n) {
+    return function (cb) {
+        setTimeout(cb, n)
+    }
+}
+
 test("async is a function", function (assert) {
     assert.equal(typeof async, "function")
     assert.end()
