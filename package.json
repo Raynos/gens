@@ -1,6 +1,6 @@
 {
   "name": "continuable-generators",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Experimental usage of generators for continuables",
   "keywords": [],
   "author": "Raynos <raynos2@gmail.com>",
