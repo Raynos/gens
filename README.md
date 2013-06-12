@@ -1,4 +1,4 @@
-# continuable-generators
+# gens
 
 <!-- [![browser support][5]][6] -->
 
@@ -6,7 +6,7 @@
 
 Experimental usage of generators for continuables
 
-`run` takes a generator and returns a continuable. It's expected that
+`async` takes a generator and returns a continuable. It's expected that
     the values you yield are continuables themself.
 
 ## Example
@@ -18,7 +18,7 @@ let console = require("console")
 let list = require("continuable-list")
 
 let client = Redis.createClient()
-let async = require("../index")
+let async = require("gens")
 
 async(function* () {
     yield client.hmset.bind(client, "blog::post", {
@@ -48,7 +48,7 @@ async(function* () {
 
 ## Installation
 
-`npm install continuable-generators`
+`npm install gens`
 
 ## Contributors
 
@@ -56,11 +56,11 @@ async(function* () {
 
 ## MIT Licenced
 
-  [1]: https://secure.travis-ci.org/Raynos/continuable-generators.png
-  [2]: https://travis-ci.org/Raynos/continuable-generators
-  [3]: https://david-dm.org/Raynos/continuable-generators.png
-  [4]: https://david-dm.org/Raynos/continuable-generators
-  [5]: https://ci.testling.com/Raynos/continuable-generators.png
-  [6]: https://ci.testling.com/Raynos/continuable-generators
-  [7]: https://badge.fury.io/js/continuable-generators.png
-  [8]: https://badge.fury.io/js/continuable-generators
+  [1]: https://secure.travis-ci.org/Raynos/gens.png
+  [2]: https://travis-ci.org/Raynos/gens
+  [3]: https://david-dm.org/Raynos/gens.png
+  [4]: https://david-dm.org/Raynos/gens
+  [5]: https://ci.testling.com/Raynos/gens.png
+  [6]: https://ci.testling.com/Raynos/gens
+  [7]: https://badge.fury.io/js/gens.png
+  [8]: https://badge.fury.io/js/gens

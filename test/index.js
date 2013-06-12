@@ -2,7 +2,6 @@ var test = require("tape")
 var fs = require("fs")
 var path = require("path")
 var error = require("continuable/error")
-var of = require("continuable/of")
 var list = require("continuable-list")
 
 var async = require("../index")

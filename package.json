@@ -1,26 +1,26 @@
 {
-  "name": "continuable-generators",
+  "name": "gens",
   "version": "0.1.8",
   "description": "Experimental usage of generators for continuables",
   "keywords": [],
   "author": "Raynos <raynos2@gmail.com>",
-  "repository": "git://github.com/Raynos/continuable-generators.git",
+  "repository": "git://github.com/Raynos/gens.git",
   "main": "index",
-  "homepage": "https://github.com/Raynos/continuable-generators",
+  "homepage": "https://github.com/Raynos/gens",
   "contributors": [
     {
       "name": "Raynos"
     }
   ],
   "bugs": {
-    "url": "https://github.com/Raynos/continuable-generators/issues",
+    "url": "https://github.com/Raynos/gens/issues",
     "email": "raynos2@gmail.com"
   },
   "dependencies": {
     "continuable": "~1.1.6"
   },
   "devDependencies": {
-    "tape": "~1.0.2",
+    "tape": "~1.0.3",
     "redis": "~0.8.3",
     "continuable-list": "~0.1.3",
     "continuable-hash": "~0.1.2",
