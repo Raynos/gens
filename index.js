@@ -16,8 +16,17 @@ function async(generator) {
                 }
 
                 var res = iterator.send(value)
-                return res.done ? callback(null, res.value) : res.value(next)
+                if (!res.done) {
+                    return res.value(next)
+                }
+
+                return isError(res.value) ? callback(res.value) :
+                    callback(null, res.value)
             }
         }
     })
+}
+
+function isError(err) {
+    return toString.call(err) === "[object Error]"
 }

@@ -2,6 +2,7 @@ var test = require("tape")
 var fs = require("fs")
 var path = require("path")
 var error = require("continuable/error")
+var of = require("continuable/of")
 var list = require("continuable-list")
 
 var async = require("../index")
@@ -37,7 +38,7 @@ test("parse json files", function (assert) {
         return JSON.parse(file)
     })(function (err, value) {
         assert.ifError(err)
-        assert.equal(value.name, "continuable-generators")
+        assert.equal(value.name, "gens")
 
         assert.end()
     })
@@ -52,8 +53,7 @@ test("parallel yields", function (assert) {
     })(function (err, value) {
         assert.ifError(err)
         assert.ok(value[0].isFile())
-        assert.equal(JSON.parse(value[1]).name,
-            "continuable-generators")
+        assert.equal(JSON.parse(value[1]).name, "gens")
 
         assert.end()
     })
@@ -110,6 +110,16 @@ test("can recover", function (assert) {
     })(function (err, value) {
         assert.ifError(err)
         assert.equal(value, 84)
+
+        assert.end()
+    })
+})
+
+test("can return error and this passes error", function (assert) {
+    async(function* () {
+        return new Error("hello")
+    })(function (err) {
+        assert.equal(err.message, "hello")
 
         assert.end()
     })
