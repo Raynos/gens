@@ -1,5 +1,7 @@
 var maybeCallback = require("continuable/maybe-callback")
 
+var toString = Object.prototype.toString
+
 module.exports = async
 
 function async(generator) {
