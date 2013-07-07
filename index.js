@@ -15,7 +15,7 @@ function async(generator) {
                     return callback(err)
                 }
 
-                var res = iterator.send(value)
+                var res = iterator.next(value)
                 if (!res.done) {
                     return res.value(next)
                 }
