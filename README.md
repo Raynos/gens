@@ -12,13 +12,13 @@ Experimental usage of generators for continuables
 ## Example
 
 ```js
-// run this with --use-strict --harmony on node v0.11.2
+// run this with --use-strict --harmony on node v0.11.3
 let Redis = require("redis")
 let console = require("console")
-let list = require("continuable-list")
+let async = require("gens")
+let parallel = require("gens/parallel")
 
 let client = Redis.createClient()
-let async = require("gens")
 
 async(function* () {
     yield client.hmset.bind(client, "blog::post", {
@@ -29,7 +29,7 @@ async(function* () {
 
     let post = yield client.hgetall.bind(client, "blog::post")
     let tags = post.tags.split(",")
-    let taggedPosts = yield list(tags.map(function (tag) {
+    let taggedPosts = yield parallel(tags.map(function (tag) {
         return client.hgetall.bind(client, "post::tag::" + tag)
     }))
 
@@ -43,7 +43,6 @@ async(function* () {
 
     client.quit()
 })
-
 ```
 
 ## Installation
