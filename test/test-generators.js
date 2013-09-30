@@ -197,6 +197,8 @@ function testGenerators(impl) {
         }
 
         var dbGet = function* (key) {
+            yield impl.sleep(5)
+
             var tuple = yield { both: readFile("/keys/" + key) }
 
             if (tuple[0]) {
@@ -240,6 +242,8 @@ function testGenerators(impl) {
 
         var dbGet = function* (key) {
             try {
+                yield impl.sleep(5)
+
                 return yield readFile("/keys/" + key)
             } catch (err) {
                 throw new Error("NotFound")
