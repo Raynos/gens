@@ -41,13 +41,19 @@ function runValue(value, next) {
     } else if (Array.isArray(value) && typeof value[0] === "function") {
         parallel(value)(next)
     } else if (Array.isArray(value) && isGenerator(value[0])) {
-        parallel(value.map(function (generator) {
-            return function (cb) {
-                async(generator)(cb)
-            }
-        }))(next)
+        parallel(value.map(toContinuable))(next)
     } else if (value.both) {
+        if (isGenerator(value.both)) {
+            value.both = toContinuable(value.both)
+        }
+
         both(value.both)(next)
+    }
+}
+
+function toContinuable(generator) {
+    return function (cb) {
+        async(generator)(cb)
     }
 }
 
