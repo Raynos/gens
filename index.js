@@ -1,11 +1,10 @@
 var maybeCallback = require("continuable/maybe-callback")
-var parallel = require("continuable-para")
-
-var both = require("./both.js")
 
 var toString = Object.prototype.toString
 
 module.exports = async
+
+var Asynchrony = require("./asynchrony")
 
 function async(generator) {
     return maybeCallback(function async() {
@@ -14,6 +13,7 @@ function async(generator) {
         return function continuable(callback) {
             var iterator = isGenerator(generator) ?
                 generator : generator.apply(this, args)
+
             next(null, null)
 
             function next(err, value) {
@@ -36,24 +36,19 @@ function async(generator) {
 function runValue(value, next) {
     if (!value) {
         return
-    } else if (typeof value === "function") {
-        value(next)
-    } else if (Array.isArray(value) && typeof value[0] === "function") {
-        parallel(value)(next)
+    } else if (Asynchrony.is(value)) {
+        Asynchrony.execute(value, next)
+    } else if (Array.isArray(value) && Asynchrony.is(value[0])) {
+        Asynchrony.parallel(value, next)
     } else if (Array.isArray(value) && isGenerator(value[0])) {
-        parallel(value.map(toContinuable))(next)
+        console.log("mapping", value)
+        Asynchrony.parallel(value.map(Asynchrony.to), next)
     } else if (value.both) {
         if (isGenerator(value.both)) {
-            value.both = toContinuable(value.both)
+            value.both = Asynchrony.to(value.both)
         }
 
-        both(value.both)(next)
-    }
-}
-
-function toContinuable(generator) {
-    return function (cb) {
-        async(generator)(cb)
+        Asynchrony.both(value, next)
     }
 }
 

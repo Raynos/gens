@@ -1,5 +1,6 @@
 var test = require("tape")
 var util = require("util")
+var Promise = require("bluebird")
 
 module.exports = testGenerators
 
@@ -261,17 +262,38 @@ function testGenerators(impl) {
         impl.run(task, "bar", function (err, value) {
             assert.ifError(err)
 
-            console.log("value", value)
             assert.equal(value, null)
 
             impl.run(task, "foo", function (err, value) {
                 assert.ifError(err)
 
-                console.log("value", value)
                 assert.equal(value, "bar")
 
                 assert.end()    
             })
+        })
+    })
+
+    test("supports promises & thunks", function (assert) {
+        var task = function* () {
+            var one = yield Promise.fulfilled("one")
+            var two = yield function (cb) { cb(null, "two") }
+            var three = yield [
+                Promise.fulfilled("three"),
+                Promise.fulfilled("four")
+            ]
+            var four = yield { both: Promise.fulfilled("five") }
+            var five = yield { both: Promise.rejected(Error("six")) }
+
+            return one + two + three[0] + three[1] + four[1] +
+                five[0].message
+        }
+
+        impl.run(task, function (err, value) {
+            assert.ifError(err)
+
+            assert.equal(value, "onetwothreefourfivesix")
+            assert.end()
         })
     })
 }
