@@ -41,7 +41,6 @@ function runValue(value, next) {
     } else if (Array.isArray(value) && Asynchrony.is(value[0])) {
         Asynchrony.parallel(value, next)
     } else if (Array.isArray(value) && isGenerator(value[0])) {
-        console.log("mapping", value)
         Asynchrony.parallel(value.map(Asynchrony.to), next)
     } else if (value.both) {
         if (isGenerator(value.both)) {
@@ -49,6 +48,9 @@ function runValue(value, next) {
         }
 
         Asynchrony.both(value, next)
+    } else {
+        throw new Error("yielded strange value. Cannot be run " + 
+            JSON.stringify(value))
     }
 }
 
@@ -57,5 +59,7 @@ function isError(err) {
 }
 
 function isGenerator(obj) {
-  return obj && toString.call(obj) === "[object Generator]"
+  return obj && (toString.call(obj) === "[object Generator]" ||
+    // this fallback is here for polyfill runtimes, like facebook/regenerator
+    (obj.constructor && 'Generator' == obj.constructor.name))
 }
