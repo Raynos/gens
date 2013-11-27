@@ -24,7 +24,8 @@ function async(generator) {
                 return runValue(res.value, next)
             }
 
-            return callback(null, res.value)
+            return isError(res.value) ? callback(res.value) :
+                callback(null, res.value)
         }
     }
 }
