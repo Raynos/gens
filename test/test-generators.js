@@ -1,5 +1,4 @@
 var test = require("tape")
-var util = require("util")
 var Promise = require("bluebird")
 
 module.exports = testGenerators
@@ -26,12 +25,28 @@ function testGenerators(impl) {
         })
     })
 
-    test("generator may return error", function (assert) {
+    test("generator may yield error", function (assert) {
         var gen1 = function* () {
-            return new Error("normal error")
+            yield new Error("normal error")
         }
 
         impl.run(gen1, function (err, value) {
+            assert.equal(err.message, "normal error")
+
+            assert.end()
+        })
+    })
+
+    test("generator may yield erorr in yield*", function (assert) {
+        var gen1 = function* () {
+            yield new Error("normal error")
+        }
+
+        var gen2 = function* () {
+            yield* gen1()
+        }
+
+        impl.run(gen2, function (err, value) {
             assert.equal(err.message, "normal error")
 
             assert.end()
@@ -203,7 +218,7 @@ function testGenerators(impl) {
             var tuple = yield { both: readFile("/keys/" + key) }
 
             if (tuple[0]) {
-                return new Error("NotFound")
+                yield new Error("NotFound")
             }
 
             return tuple[1]
@@ -227,7 +242,7 @@ function testGenerators(impl) {
 
                 assert.equal(value, "bar")
 
-                assert.end()    
+                assert.end()
             })
         })
     })
@@ -269,7 +284,7 @@ function testGenerators(impl) {
 
                 assert.equal(value, "bar")
 
-                assert.end()    
+                assert.end()
             })
         })
     })

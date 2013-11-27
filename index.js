@@ -1,5 +1,3 @@
-var maybeCallback = require("continuable/maybe-callback")
-
 var toString = Object.prototype.toString
 
 module.exports = async
@@ -7,30 +5,28 @@ module.exports = async
 var Asynchrony = require("./asynchrony")
 
 function async(generator) {
-    return maybeCallback(function async() {
+    return function async() {
         var args = [].slice.call(arguments)
+        var callback = args.pop()
 
-        return function continuable(callback) {
-            var iterator = isGenerator(generator) ?
-                generator : generator.apply(this, args)
+        var iterator = isGenerator(generator) ?
+            generator : generator.apply(this, args)
 
-            next(null, null)
+        next(null, null)
 
-            function next(err, value) {
-                if (err) {
-                    return callback(err)
-                }
-
-                var res = iterator.next(value)
-                if (!res.done) {
-                    return runValue(res.value, next)
-                }
-
-                return isError(res.value) ? callback(res.value) :
-                    callback(null, res.value)
+        function next(err, value) {
+            if (err) {
+                return callback(err)
             }
+
+            var res = iterator.next(value)
+            if (!res.done) {
+                return runValue(res.value, next)
+            }
+
+            return callback(null, res.value)
         }
-    })
+    }
 }
 
 function runValue(value, next) {
@@ -48,6 +44,8 @@ function runValue(value, next) {
         }
 
         Asynchrony.both(value, next)
+    } else if (isError(value)) {
+        next(value)
     } else {
         throw new Error("yielded strange value. Cannot be run " + 
             JSON.stringify(value))
